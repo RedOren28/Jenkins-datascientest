@@ -13,8 +13,6 @@ pipeline {
         }
         stage('Testing') {
             steps {
-                sh 'python3 --version'  // Vérifier la version de Python3
-                sh 'pip3 --version'     // Vérifier la version de pip
                 sh 'python3 -m unittest'
             }
         }
@@ -22,7 +20,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker rm -f jenkins || true
+                    docker rm -f jenkins
                     docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
                     docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
                     '''
@@ -44,7 +42,7 @@ pipeline {
             parallel {
                 stage('Pushing Image') {
                     environment {
-                        DOCKERHUB_CREDENTIALS = credentials('DOCKER_HUB_PASS')
+                        DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
                     }
                     steps {
                       sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
