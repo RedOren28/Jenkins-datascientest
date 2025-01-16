@@ -13,8 +13,8 @@ pipeline {
         }
         stage('Testing') {
             steps {
-                sh 'python3 --version'  // Vérifiez que Python3 est installé
-                sh 'pip --version'      // Vérifiez que pip est installé
+                sh 'python3 --version'  // Vérifier la version de Python3
+                sh 'pip3 --version'     // Vérifier la version de pip
                 sh 'python3 -m unittest'
             }
         }
