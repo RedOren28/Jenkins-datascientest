@@ -29,12 +29,9 @@ pipeline {
         }
         stage('User Acceptance') {
             steps {
-                script {
-                    // input(
-                    //     message: "Proceed to push to main?", 
-                    //     ok: "Yes"
-                    // )
-                    echo "Automatically proceeding with push."
+                input{
+                    message: "Proceed to push to main?", 
+                    ok "Yes"
                 }
             }
         }
