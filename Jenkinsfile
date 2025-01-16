@@ -48,7 +48,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            withCredentials([usernamePassword(credentialsId: 'docker_jenkins', passwordVariable: 'DOCKERHUB_PSW', usernameVariable: 'DOCKERHUB_USR')]) {
+                            withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_PASS', passwordVariable: 'DOCKERHUB_PSW', usernameVariable: 'DOCKERHUB_USR')]) {
                                 // Connexion à Docker Hub avec les informations d'identification injectées
                                 sh 'echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin'
                                 // Pousser l'image Docker
