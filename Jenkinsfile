@@ -1,9 +1,9 @@
 pipeline {
-  agent any
-  environment { 
-    DOCKER_ID = "redoren"
-    DOCKER_IMAGE = "datascientestapi"
-    DOCKER_TAG = "v.${BUILD_ID}.0" 
+    agent any
+    environment { 
+        DOCKER_ID = "redoren"
+        DOCKER_IMAGE = "datascientestapi"
+        DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
@@ -13,7 +13,9 @@ pipeline {
         }
         stage('Testing') {
             steps {
-                sh 'python -m unittest'
+                sh 'python3 --version'  // Vérifiez que Python3 est installé
+                sh 'pip --version'      // Vérifiez que pip est installé
+                sh 'python3 -m unittest'
             }
         }
         stage('Deploying') {
@@ -31,8 +33,8 @@ pipeline {
             steps {
                 script {
                     input(
-                        message: "Proceed to push to main?", // Message pour l'utilisateur
-                        ok: "Yes" // Texte du bouton
+                        message: "Proceed to push to main?", 
+                        ok: "Yes"
                     )
                 }
             }
