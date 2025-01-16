@@ -47,15 +47,9 @@ pipeline {
                         DOCKERHUB_CREDENTIALS = credentials('DOCKER_HUB_PASS')
                     }
                     steps {
-                        script {
-                            withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_PASS', passwordVariable: 'DOCKERHUB_PSW', usernameVariable: 'DOCKERHUB_USR')]) {
-                                // Connexion à Docker Hub avec les informations d'identification injectées
-                                sh 'echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin'
-                                // Pousser l'image Docker
-                                sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-                            }
-                        }
-                    }
+                      sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                      sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+                  }
                 }
                 stage('Merging') {
                     steps {
