@@ -7,56 +7,58 @@ pipeline {
     }
     stages {
         stage('Building') {
-          steps {
+            steps {
                 sh 'pip install -r requirements.txt'
-          }
+            }
         }
         stage('Testing') {
-          steps {
+            steps {
                 sh 'python -m unittest'
-          }
-        }
-          stage('Deploying') {
-          steps{
-            script {
-              sh '''
-              docker rm -f jenkins
-              docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-              docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-              '''
             }
-          }
         }
-          stage('User Acceptance') {
-            steps{
-                input {
-              message "Proceed to push to main"
-              ok "Yes"
-            }    
+        stage('Deploying') {
+            steps {
+                script {
+                    sh '''
+                    docker rm -f jenkins || true
+                    docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+                    docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+                    '''
+                }
             }
-          }
-          stage('Pushing and Merging'){
+        }
+        stage('User Acceptance') {
+            steps {
+                script {
+                    input(
+                        message: "Proceed to push to main?", // Message pour l'utilisateur
+                        ok: "Yes" // Texte du bouton
+                    )
+                }
+            }
+        }
+        stage('Pushing and Merging') {
             parallel {
                 stage('Pushing Image') {
-                  environment {
-                      DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
-                  }
-                  steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                      sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-                  }
+                    environment {
+                        DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+                    }
+                    steps {
+                        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                        sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+                    }
                 }
-            stage('Merging') {
-              steps {
-                echo 'Merging done'
-              }
+                stage('Merging') {
+                    steps {
+                        echo 'Merging done'
+                    }
+                }
             }
-          }
         }
     }
     post {
-      always {
-        sh 'docker logout'
-      }
+        always {
+            sh 'docker logout'
+        }
     }
 }
